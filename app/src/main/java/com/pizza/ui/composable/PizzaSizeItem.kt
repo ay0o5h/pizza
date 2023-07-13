@@ -26,7 +26,7 @@ fun PizzaSizeItem(
     Button(
         onClick = { onSelectSize() },
         modifier = Modifier
-            .size(68.dp),
+            .size(56.dp),
         elevation= ButtonDefaults.buttonElevation(buttonElevation),
         colors = ButtonDefaults.buttonColors(containerColor = Color.White),
     ) {

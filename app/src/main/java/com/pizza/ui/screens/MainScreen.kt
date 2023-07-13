@@ -18,15 +18,10 @@ import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -38,7 +33,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.pizza.R
 import com.pizza.ui.composable.Appbar
@@ -46,9 +40,8 @@ import com.pizza.ui.composable.ImageSlider
 import com.pizza.ui.composable.PizzaSizeItem
 import com.pizza.utils.Constants
 import com.pizza.ui.theme.Typography
-import org.intellij.lang.annotations.JdkConstants
 
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
+//@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen(
@@ -59,29 +52,29 @@ fun MainScreen(
         initialPage = 1
     )
     Scaffold(
+        containerColor= Color.White,
         topBar = {
             Appbar(title="Pizza" , onNavigateUp = {})
         },
-        content= {
+    ){
         MainContent(
+            modifier= Modifier.padding(it),
             onSelectSize = { size: PizzaSizesUIState -> viewModel.onSelectSize(size) },
             pagerState = pagerState,
             state=state,
         )
     }
-    )
-
-
 }
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun MainContent(
+    modifier: Modifier = Modifier,
     onSelectSize: (PizzaSizesUIState) -> Unit,
     pagerState : PagerState,
     state: MainScreenUIState,
 ) {
 
-    Column(   modifier = Modifier
+    Column(   modifier = modifier
         .fillMaxSize()
         .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally,) {
