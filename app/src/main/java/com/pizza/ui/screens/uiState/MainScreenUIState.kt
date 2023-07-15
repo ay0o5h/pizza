@@ -59,10 +59,10 @@ data class MainScreenUIState(
     ),
     val pizzaSizes: List<PizzaSizesUIState> = listOf(
         PizzaSizesUIState(type = "S", number = .7f),
-        PizzaSizesUIState(type = "M", number = .85f),
-        PizzaSizesUIState(type = "L", number = .8f),
+        PizzaSizesUIState(type = "M", number = .8f),
+        PizzaSizesUIState(type = "L", number = .85f),
         ),
-    val selectedSize: PizzaSizesUIState = PizzaSizesUIState(type = "M", number = .5f),
+    val selectedSize: PizzaSizesUIState = PizzaSizesUIState(type = "M", number = .8f),
 )
 
 

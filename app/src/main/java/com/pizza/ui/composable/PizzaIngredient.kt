@@ -27,7 +27,6 @@ fun PizzaIngredient(
     images : List<Int>,
     isSelected: Boolean =false,
     modifier: Modifier = Modifier,
-    scale: Float = 1f
 ) {
         Box(modifier = modifier.size(250.dp)) {
             androidx.compose.animation.AnimatedVisibility(

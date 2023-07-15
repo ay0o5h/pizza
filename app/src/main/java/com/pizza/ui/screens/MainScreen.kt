@@ -1,5 +1,6 @@
 package com.pizza.ui.screens
 
+import android.annotation.SuppressLint
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.animateFloatAsState
@@ -41,6 +42,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -76,7 +78,7 @@ fun MainScreen(
 ) {
     val state by viewModel.state.collectAsState()
     val pagerState = rememberPagerState(
-        initialPage = 0
+
     )
     Scaffold(
         containerColor= Color.White,
@@ -93,6 +95,7 @@ fun MainScreen(
         )
     }
 }
+@SuppressLint("UnrememberedMutableState")
 @OptIn(ExperimentalFoundationApi::class, ExperimentalAnimationApi::class,)
 @Composable
 fun MainContent(
@@ -181,7 +184,9 @@ fun MainContent(
                     Text(text = it.type,
                         textAlign= TextAlign.Center,
                         style = Typography.bodyMedium.copy(color = Color.Black, fontSize = 16.sp,),
-                        modifier = Modifier .clickable{ onSelectSize(it)  }
+                        modifier = Modifier.clickable(
+                            indication = null,
+                            interactionSource = remember { MutableInteractionSource() }){ onSelectSize(it)  }
                     )
                 }
             }
@@ -202,10 +207,10 @@ fun MainContent(
                 Surface(
                     modifier = Modifier
                         .size(50.dp)
-                        .clickable(indication = null,
-                            interactionSource = remember { MutableInteractionSource() }) {
-                            onSelectIngredient(it.type, pagerState.currentPage)
-                        },
+                        .clickable(
+                            indication = null,
+                            interactionSource = remember { MutableInteractionSource() }
+                        ) {onSelectIngredient(it.type, pagerState.currentPage)},
                     shape= CircleShape,
                     color=if(it.isSelected) green else Color.Transparent,
                 ){
