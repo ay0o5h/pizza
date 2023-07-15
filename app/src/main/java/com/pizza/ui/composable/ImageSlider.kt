@@ -18,11 +18,12 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import com.pizza.ui.screens.uiState.PizzaUIState
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ImageSlider(
-    imageList: List<Int>,
+    imageList: List<PizzaUIState>,
     pagerState: PagerState,
     modifier: Modifier = Modifier,
     selectedSize: Float = .5f,
@@ -32,14 +33,14 @@ fun ImageSlider(
         pageCount = imageList.size,
         contentPadding = PaddingValues(horizontal = 3.dp),
         pageSpacing = 8.dp,
-        modifier = modifier
+        modifier = modifier,
     ) {
         val animatedScale by animateFloatAsState(
             targetValue = selectedSize,
-            animationSpec = tween(durationMillis = 400)
+            animationSpec = tween(durationMillis = 200)
         )
         Image(
-            painter = painterResource(id = imageList[it % imageList.size]),
+            painter = painterResource(id = imageList[it].image),
             contentDescription = "",
             modifier = Modifier
                 .scale(animatedScale)

@@ -1,4 +1,4 @@
-package com.pizza.ui.screens
+package com.pizza.ui.screens.uiState
 
 data class PizzaSizesUIState(
     val type: String,
