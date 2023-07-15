@@ -1,10 +1,9 @@
 package com.pizza.ui.screens
 
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
 import androidx.compose.animation.slideInHorizontally
@@ -12,11 +11,10 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -44,6 +42,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
@@ -54,6 +54,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -61,12 +62,13 @@ import com.pizza.R
 import com.pizza.ui.composable.AddToCartButton
 import com.pizza.ui.composable.AnimateBackgroundAlignment
 import com.pizza.ui.composable.Appbar
-import com.pizza.ui.composable.ImageSlider
+import com.pizza.ui.composable.PizzaIngredient
 import com.pizza.ui.screens.uiState.MainScreenUIState
 import com.pizza.ui.screens.uiState.PizzaSizesUIState
-import com.pizza.utils.Constants
 import com.pizza.ui.theme.Typography
 import com.pizza.ui.theme.green
+import kotlin.random.Random
+
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen(
@@ -107,83 +109,54 @@ fun MainContent(
             else -> -.6f
         }
     )
-    Column(modifier = modifier.fillMaxSize().verticalScroll(rememberScrollState()),
+    Column(modifier = modifier
+        .fillMaxSize()
+        .verticalScroll(rememberScrollState()),
         verticalArrangement= Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally,) {
-        Box( modifier = Modifier.fillMaxWidth().fillMaxHeight(3f),
+        Box( modifier = Modifier
+            .fillMaxWidth()
+            .height(250.dp),
             contentAlignment = Alignment.Center,
         ) {
             Image(
                 painter = painterResource(id = R.drawable.plate),
                 contentDescription = "",
-                modifier = Modifier
-                    .fillMaxSize()
-                    .height(250.dp),
+                modifier = Modifier.size(250.dp)
             )
             HorizontalPager(
                 state = pagerState,
                 pageCount = state.pizzas.size,
-                contentPadding = PaddingValues(horizontal = 3.dp),
-                pageSpacing = 8.dp,
-                modifier = Modifier
-                    .background(Color.Transparent)
-                    .fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth(),
             ) {
                 val animatedScale by animateFloatAsState(
                     targetValue =  state.selectedSize.number,
                     animationSpec = tween(durationMillis = 200)
                 )
-                Box(
-                    modifier = Modifier.fillMaxSize().scale(animatedScale)
+                Box(modifier = Modifier
+                    .fillMaxSize()
+                    .height(250.dp)
+                    .scale(animatedScale),
                 ) {
                     Image(
                         painter = painterResource(id = state.pizzas[it].image),
                         contentDescription = "",
+                        alignment = Alignment.Center,
+                        modifier = Modifier.fillMaxSize()
                     )
-                    if(pagerState.isScrollInProgress){
-                        state.pizzas[pagerState.currentPage].ingredients.filter { it.isSelected }.forEach() { ingredient ->
-                            ingredient.ingredientImages.forEach { image ->
-                                Image(
-                                    painter = painterResource(id = image),
-                                    contentDescription = null,
-                                    modifier = Modifier.scale(.3f)
-                                )
-                            }
-                        }
-                    }else{
-                        state.pizzas[pagerState.currentPage].ingredients.forEach() { ingredient ->
-                            ingredient.ingredientImages.forEachIndexed { index, image ->
-                                androidx.compose.animation.AnimatedVisibility(
-                                    visible = ingredient.isSelected,
-                                    enter = if (index % 2 == 0)
-                                        slideInHorizontally(
-                                            initialOffsetX = { fullWidth -> fullWidth },
-                                            animationSpec = tween(durationMillis = 200)
-                                        )
-                                    else slideInHorizontally(
-                                        initialOffsetX = { fullWidth -> -fullWidth  },
-                                        animationSpec = tween(durationMillis = 200)
-                                    )  + scaleIn(initialScale = 3f),
-                                    exit = scaleOut(),
-                                    modifier = Modifier.padding(16.dp)
-                                ) {
-                                    Image(
-                                        painter = painterResource(id = image),
-                                        contentDescription = null,
-                                        modifier = Modifier.scale(.3f).padding(16.dp)
-                                    )
-                                }
-                            }
-                        }
+                    state.pizzas[pagerState.currentPage].ingredients.forEach() { ingredient ->
+                        PizzaIngredient(
+                            images =ingredient.ingredientImages,
+                            isSelected = ingredient.isSelected,
+                        )
                     }
-
                 }
             }
         }
         Text(
             stringResource(R.string._17),
             style = Typography.titleLarge,
-            modifier = Modifier.padding(bottom = 16.dp))
+            modifier = Modifier.padding(vertical = 16.dp))
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -201,12 +174,14 @@ fun MainContent(
             ){}
             Row(horizontalArrangement = Arrangement.SpaceEvenly,
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxSize().padding(bottom = 6.dp)) {
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(bottom = 6.dp)) {
                 state.pizzaSizes.forEach {
                     Text(text = it.type,
                         textAlign= TextAlign.Center,
                         style = Typography.bodyMedium.copy(color = Color.Black, fontSize = 16.sp,),
-                        modifier = Modifier .clickable { onSelectSize(it)  }
+                        modifier = Modifier .clickable{ onSelectSize(it)  }
                     )
                 }
             }
@@ -226,8 +201,10 @@ fun MainContent(
             items(state.pizzas[pagerState.currentPage].ingredients){
                 Surface(
                     modifier = Modifier
-                        .size(50.dp).clickable {
-                            onSelectIngredient(it.type,pagerState.currentPage)
+                        .size(50.dp)
+                        .clickable(indication = null,
+                            interactionSource = remember { MutableInteractionSource() }) {
+                            onSelectIngredient(it.type, pagerState.currentPage)
                         },
                     shape= CircleShape,
                     color=if(it.isSelected) green else Color.Transparent,
