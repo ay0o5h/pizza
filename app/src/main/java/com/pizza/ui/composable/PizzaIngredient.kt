@@ -29,7 +29,7 @@ fun PizzaIngredient(
         Box(modifier = modifier.size(250.dp)) {
             if(pagerState.isScrollInProgress){
                 images.filter { isSelected }.forEach { image ->
-                    val randomOffsetX = remember { mutableStateOf(Random.nextInt(80, 300 )) }
+                    val randomOffsetX = remember { mutableStateOf(Random.nextInt(60, 280 )) }
                     val randomOffsetY = remember { mutableStateOf(Random.nextInt(10, 210)) }
                     Image(
                         painter = painterResource(id = image),
@@ -44,7 +44,7 @@ fun PizzaIngredient(
                     exit = scaleOut(),
                 ) {
                     images.forEach { image ->
-                        val randomOffsetX = remember { mutableStateOf(Random.nextInt(80, 300 )) }
+                        val randomOffsetX = remember { mutableStateOf(Random.nextInt(60, 280 )) }
                         val randomOffsetY = remember { mutableStateOf(Random.nextInt(10, 210)) }
                         Image(
                             painter = painterResource(id = image),
